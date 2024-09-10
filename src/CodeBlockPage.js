@@ -39,7 +39,7 @@ const CodeBlockPage = () => {
     });
 
     newSocket.on('solution', (solution) => {
-      console.log(`Received solution: ${solution}`); // Debugging to verify the solution is received
+      console.log("Received solution: ", solution); 
       setSolution(solution); // Set solution when received from server
     });
 
@@ -55,34 +55,44 @@ const CodeBlockPage = () => {
     }
   };
 
-  // Normalizing code and solution for better comparison
+  // Controlled normalization to only trim and remove unnecessary whitespaces
+  const normalizeCode = (str) => {
+    return str
+      .replace(/\/\/.*$/gm, '')       // Remove single-line comments
+      .replace(/\/\*[\s\S]*?\*\//g, '') // Remove block comments
+      .replace(/[ ]{2,}/g, ' ')       // Replace multiple spaces with one
+      .trim();                         // Trim leading
+  };
+
   useEffect(() => {
-    const normalizedCode = code.replace(/\s+/g, ' ').trim();   // Normalize spaces and trim code
-    const normalizedSolution = solution.replace(/\s+/g, ' ').trim();   // Normalize spaces and trim solution
+    const normalizedCode = normalizeCode(code);
+    const normalizedSolution = normalizeCode(solution);
 
-    console.log("Student's Code:", normalizedCode); // Debugging to see the student's code
-    console.log("Expected Solution:", normalizedSolution); // Debugging to see the expected solution
+    console.log("Student's Code:", normalizedCode);
 
-    // Compare the normalized code with the normalized solution
-    if (normalizedCode === normalizedSolution) {
-      setShowSmiley(true); // Show smiley if the code matches the solution
+    // Check if the normalized code and solution match
+    if (normalizedCode && normalizedCode === normalizedSolution) {
+      setShowSmiley(true); // Show smiley if code matches solution
     } else {
-      setShowSmiley(false); // Hide smiley if no match
+      setShowSmiley(false); // Hide smiley if there's no match
     }
   }, [code, solution]); // Effect runs when code or solution changes
 
   const codeTitles = {
-    "1": "Async Case",
-    "2": "Promises",
-    "3": "Closures",
-    "4": "Callbacks"
+    "66e0432df71179d1da9f32c6": "Async Case",
+    "66e0432df71179d1da9f32c7": "Promises",
+    "66e0432df71179d1da9f32c8": "Closures",
+    "66e0432df71179d1da9f32c9": "Callbacks"
   };
+
+  const currentTitle = codeTitles[id] || "Unknown Code Block"; 
 
   return (
     <div className="codeblock-container">
-      <h1>{codeTitles[id] || `Code Block ${id}`}</h1>
+      <h1>{currentTitle}</h1>
       <p>Role: {isMentor ? 'Mentor' : 'Student'}</p>
       <p>Students in Room: {studentsInRoom}</p>
+
       <Editor
         height="400px"
         language="javascript"
@@ -90,7 +100,7 @@ const CodeBlockPage = () => {
         onChange={handleCodeChange}
         options={{ readOnly: !canEdit }}
       />
-      {showSmiley && <div className="smiley-face" style={{ fontSize: '100px' }}>😊</div>}
+      {showSmiley && <div className="smiley-face" style={{ fontSize: '150px' }}>😊</div>}
     </div>
   );
 };

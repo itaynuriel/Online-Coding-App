@@ -23,6 +23,16 @@ const CodeBlock = mongoose.model('CodeBlock', codeBlockSchema);
 const app = express();
 app.use(cors());
 
+app.get("/api/getCodeBlocks", async (req, res) => {
+    console.log("hi")
+    try {
+        codeBlock = await CodeBlock.find({});
+        res.send(codeBlock)
+    } catch {
+        res.status(500);
+    }
+})
+
 // Server and Socket.io Setup
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -41,14 +51,19 @@ io.on('connection', (socket) => {
     socket.join(roomId);
     console.log(`Client ${socket.id} joined room ${roomId}`);
 
-    // Fetch the code block data from the database by roomId
-    let codeBlock;
-    try {
-      codeBlock = await CodeBlock.findById(roomId); // Find the code block by its ID
-      console.log(`Code block found: ${codeBlock.title}, solution: ${codeBlock.solution}`); // Debugging to verify solution is fetched
-    } catch (error) {
-      console.error("Error finding code block:", error);
+       // Fetch the code block data from the database by roomId
+  let codeBlock;
+  try {
+    codeBlock = await CodeBlock.findById(roomId);
+    if (codeBlock) {
+      console.log("Emitting solution: ", codeBlock.solution);  // Log the solution being emitted
+      socket.emit('solution', codeBlock.solution);  // Send the solution to the client
+    } else {
+      console.log("No code block found for this roomId:", roomId);
     }
+  } catch (error) {
+    console.error("Error finding code block:", error);
+  }
 
     // Initialize the room if it doesn't exist yet
     if (!rooms[roomId]) {
