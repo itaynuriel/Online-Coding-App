@@ -48,9 +48,16 @@ const CodeBlockPage = () => {
     }
   };
 
+  const codeTitles = {
+    "1": "Async Case",
+    "2": "Promises",
+    "3": "Closures",
+    "4": "Callbacks"
+  };
+
   return (
     <div className="codeblock-container">
-      <h1>Code Block {id}</h1>
+      <h1>{codeTitles[id] || `Code Block ${id}`}</h1>
       <p>Role: {isMentor ? 'Mentor' : 'Student'}</p>
       <p>Students in Room: {studentsInRoom}</p>
       <Editor
