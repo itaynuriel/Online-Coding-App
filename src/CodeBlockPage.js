@@ -12,6 +12,8 @@ const CodeBlockPage = () => {
   const [isMentor, setIsMentor] = useState(false);
   const [canEdit, setCanEdit] = useState(true);
   const [studentsInRoom, setStudentsInRoom] = useState(1);
+  const [solution, setSolution] = useState(''); // Solution state
+  const [showSmiley, setShowSmiley] = useState(false); // Smiley face state
 
   useEffect(() => {
     const newSocket = io('http://localhost:4000');
@@ -36,6 +38,11 @@ const CodeBlockPage = () => {
       navigate('/');
     });
 
+    newSocket.on('solution', (solution) => {
+      console.log(`Received solution: ${solution}`); // Debugging to verify the solution is received
+      setSolution(solution); // Set solution when received from server
+    });
+
     return () => {
       newSocket.close();
     };
@@ -47,6 +54,22 @@ const CodeBlockPage = () => {
       socket.emit('code-update', { roomId: id, code: newCode });
     }
   };
+
+  // Normalizing code and solution for better comparison
+  useEffect(() => {
+    const normalizedCode = code.replace(/\s+/g, ' ').trim();   // Normalize spaces and trim code
+    const normalizedSolution = solution.replace(/\s+/g, ' ').trim();   // Normalize spaces and trim solution
+
+    console.log("Student's Code:", normalizedCode); // Debugging to see the student's code
+    console.log("Expected Solution:", normalizedSolution); // Debugging to see the expected solution
+
+    // Compare the normalized code with the normalized solution
+    if (normalizedCode === normalizedSolution) {
+      setShowSmiley(true); // Show smiley if the code matches the solution
+    } else {
+      setShowSmiley(false); // Hide smiley if no match
+    }
+  }, [code, solution]); // Effect runs when code or solution changes
 
   const codeTitles = {
     "1": "Async Case",
@@ -67,6 +90,7 @@ const CodeBlockPage = () => {
         onChange={handleCodeChange}
         options={{ readOnly: !canEdit }}
       />
+      {showSmiley && <div className="smiley-face" style={{ fontSize: '100px' }}>😊</div>}
     </div>
   );
 };
