@@ -5,10 +5,16 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 // MongoDB Connection Setup
-mongoose.connect('mongodb://localhost:27017/codeblocks')
-  .then(() => console.log("MongoDB successfully connected"))
-  .catch(err => console.error("MongoDB connection error:", err));
-
+// mongoose.connect('mongodb://localhost:27017/codeblocks')
+//   .then(() => console.log("MongoDB successfully connected"))
+//   .catch(err => console.error("MongoDB connection error:", err));
+ 
+  mongoose.connect('mongodb+srv://itaynuriel1:burhtk11@codeblocks.rdwbv.mongodb.net/codeblocks?retryWrites=true&w=majority', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => console.log('MongoDB connected to Atlas'))
+  .catch(err => console.error('MongoDB connection error:', err));
 
 // Mongoose Schema
 const codeBlockSchema = new mongoose.Schema({

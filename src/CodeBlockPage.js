@@ -15,6 +15,31 @@ const CodeBlockPage = () => {
   const [solution, setSolution] = useState(''); // Solution state
   const [showSmiley, setShowSmiley] = useState(false); // Smiley face state
 
+  // Function to convert escape characters like \n into actual newlines
+const formatCode = (str) => {
+    return str.replace(/\\n/g, '\n');
+  };
+
+  useEffect(() => {
+    const fetchCodeBlock = async () => {
+      try {
+        const response = await fetch(`http://localhost:4000/api/getCodeBlocks`);
+        const codeBlocks = await response.json();
+        const selectedBlock = codeBlocks.find(block => block._id === id); // Match the room id with the block id
+        if (selectedBlock) {
+            setCode(formatCode(selectedBlock.code)); // Set the code with proper formatting
+            setSolution(formatCode(selectedBlock.solution)); // Set the solution with proper formatting
+          }
+      } catch (err) {
+        console.error("Error fetching code block: ", err);
+      }
+    };
+
+    fetchCodeBlock();
+  }, [id]);
+
+
+
   useEffect(() => {
     const newSocket = io('http://localhost:4000');
     setSocket(newSocket);
