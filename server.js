@@ -4,6 +4,7 @@ const socketIo = require('socket.io');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
+
 // MongoDB Connection Setup
 // mongoose.connect('mongodb://localhost:27017/codeblocks')
 //   .then(() => console.log("MongoDB successfully connected"))
@@ -16,12 +17,13 @@ const mongoose = require('mongoose');
   .then(() => console.log('MongoDB connected to Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));
 
+
 // Mongoose Schema
 const codeBlockSchema = new mongoose.Schema({
   title: String,
   code: String,
   problem: String,
-  solution: String // Added solution field
+  solution: String 
 });
 const CodeBlock = mongoose.model('CodeBlock', codeBlockSchema);
 
@@ -30,13 +32,16 @@ const app = express();
 app.use(cors());
 
 app.get("/api/getCodeBlocks", async (req, res) => {
-    console.log("hi")
     try {
-        codeBlock = await CodeBlock.find({});
+       const codeBlock = await CodeBlock.find({});
         res.send(codeBlock)
     } catch {
         res.status(500);
     }
+})
+
+app.get("/", async (req, res) => {
+        res.send("hello from api")
 })
 
 // Server and Socket.io Setup
@@ -63,7 +68,7 @@ io.on('connection', (socket) => {
     codeBlock = await CodeBlock.findById(roomId);
     if (codeBlock) {
       console.log("Emitting solution: ", codeBlock.solution);  // Log the solution being emitted
-      socket.emit('solution', codeBlock.solution);  // Send the solution to the client
+      socket.emit('solution', codeBlock.solution);  // Send solution to client
     } else {
       console.log("No code block found for this roomId:", roomId);
     }
