@@ -12,7 +12,8 @@ const mongoose = require('mongoose');
  
   mongoose.connect('mongodb+srv://itaynuriel1:burhtk11@codeblocks.rdwbv.mongodb.net/codeblocks?retryWrites=true&w=majority', {
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    dbName: "codeblocks"
   })
   .then(() => console.log('MongoDB connected to Atlas'))
   .catch(err => console.error('MongoDB connection error:', err));

@@ -2,7 +2,7 @@ import './Lobby.css';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const BACKEND_URL = "http://localhost:4000"
+const BACKEND_URL = "https://backend-online-coding-app.up.railway.app"
 
 const Lobby = () => {
   const navigate = useNavigate();

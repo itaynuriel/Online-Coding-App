@@ -14,6 +14,7 @@ const CodeBlockPage = () => {
   const [studentsInRoom, setStudentsInRoom] = useState(1);
   const [solution, setSolution] = useState(''); // Solution state
   const [showSmiley, setShowSmiley] = useState(false); // Smiley face state
+  const [currentTitle, setCurrentTitle] = useState("Unknown");
 
   // Function to convert escape characters like \n into actual newlines
 const formatCode = (str) => {
@@ -23,12 +24,13 @@ const formatCode = (str) => {
   useEffect(() => {
     const fetchCodeBlock = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/api/getCodeBlocks`);
+        const response = await fetch(`https://backend-online-coding-app.up.railway.app/api/getCodeBlocks`);
         const codeBlocks = await response.json();
         const selectedBlock = codeBlocks.find(block => block._id === id); // Match the room id with the block id
         if (selectedBlock) {
             setCode(formatCode(selectedBlock.code)); // Set the code with proper formatting
             setSolution(formatCode(selectedBlock.solution)); // Set the solution with proper formatting
+            setCurrentTitle(selectedBlock.title)
           }
       } catch (err) {
         console.error("Error fetching code block: ", err);
@@ -41,7 +43,7 @@ const formatCode = (str) => {
 
 
   useEffect(() => {
-    const newSocket = io('http://localhost:4000');
+    const newSocket = io('backend-online-coding-app.up.railway.app');
     setSocket(newSocket);
     newSocket.emit('join-room', { roomId: id });
 
@@ -102,15 +104,6 @@ const formatCode = (str) => {
       setShowSmiley(false); // Hide smiley if there's no match
     }
   }, [code, solution]); // Effect runs when code or solution changes
-
-  const codeTitles = {
-    "66e0432df71179d1da9f32c6": "Async Case",
-    "66e0432df71179d1da9f32c7": "Promises",
-    "66e0432df71179d1da9f32c8": "Closures",
-    "66e0432df71179d1da9f32c9": "Callbacks"
-  };
-
-  const currentTitle = codeTitles[id] || "Unknown Code Block"; 
 
   return (
     <div className="codeblock-container">
